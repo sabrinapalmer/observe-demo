@@ -1,10 +1,10 @@
 echo "[$(date)] Starting CPU stress test..."
 
-# Function to perform CPU-intensive calculation
-stress_cpu() {
-    local start_time=$(date +%s)
-    local end_time=$((start_time + 300))  # 5 minutes
-    local interval=0
+# Run the entire stress test within a single command
+timeout 360 bash -c '
+    start_time=$(date +%s)
+    end_time=$((start_time + 300))  # 5 minutes
+    interval=0
     
     echo "[$(date)] CPU stress test will run for 5 minutes"
     
@@ -14,7 +14,7 @@ stress_cpu() {
         if [ $((current_time - start_time)) -ne $interval ]; then
             interval=$((current_time - start_time))
             if [ $((interval % 10)) -eq 0 ]; then
-                local remaining=$((end_time - current_time))
+                remaining=$((end_time - current_time))
                 echo "[$(date)] Progress: $interval seconds elapsed, $remaining seconds remaining"
             fi
         fi
@@ -27,10 +27,7 @@ stress_cpu() {
         # Small sleep to prevent complete CPU saturation
         sleep 0.1
     done
-}
-
-# Run the stress test with timeout as a safety measure
-timeout 360 bash -c stress_cpu
+'
 
 # Check if the script completed normally
 if [ $? -eq 0 ]; then
